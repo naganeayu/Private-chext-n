@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NDL 所蔵検索</title><link rel="stylesheet" href="panel.css"></head>
+<body>
+<header><h1>ISBN / ISSN 所蔵検索</h1><p>閲覧ページ内の番号を抽出してNDLサーチで照合</p></header>
+<div class="toolbar"><button id="scan">このページをスキャン</button><label><input type="checkbox" id="loose" checked> ラベルなしの番号も探す（推奨）</label></div>
+<div id="status" role="status" aria-live="polite"></div><main id="results"></main>
+<footer>データ提供：<a href="https://ndlsearch.ndl.go.jp/" target="_blank" rel="noopener">国立国会図書館サーチ</a><p>所蔵館はSRUのLIBRARYファセットによる検索結果の集計です。全国の全所蔵館を保証するものではありません。</p></footer>
+<script src="panel.js"></script></body></html>
