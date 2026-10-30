@@ -210,7 +210,9 @@ async function run(){
   try{
     const tabs=await chrome.tabs.query({active:true,lastFocusedWindow:true});
     const tab=tabs[0] || (await chrome.tabs.query({active:true,currentWindow:true}))[0];
-    if(!tab?.id || !/^https?:/.test(tab.url||''))throw Error('通常のHTTP(S)ページを開いてください。chrome:// やPDFビューアは対象外です。');
+    if (!tab?.id) throw Error('対象のタブが見つかりません。対象ページで拡張機能のNアイコンをクリックしてください。');
+    if (!tab.url) throw Error('このタブへの一時的なアクセス権限がありません。対象ページで拡張機能のNアイコンをクリックし直してください。');
+    if (!/^https?:/.test(tab.url)) throw Error('通常のHTTP(S)ページを開いてください。chrome:// やPDFビューアは対象外です。');
     const response=await chrome.scripting.executeScript({target:{tabId:tab.id},func:collectIdentifiers,args:[looseEl.checked]});
     const result=response[0]?.result;
     if(!result)throw Error('ページからスキャン結果を受信できません。');
@@ -270,9 +272,16 @@ async function run(){
       }
     }
     if (!results.querySelector('.error')) statusEl.textContent=`完了：${identifiers.length} 件の番号を検出しました。`;
-  }catch(error){statusEl.textContent='読み取り失敗：'+error.message;results.append(elm('p','error','Chromeの拡張機能管理画面でサイトへのアクセスを許可し、ページを再読み込みしてお試しください。'));}
+  }catch(error){
+    const message = String(error?.message || error);
+    const permissionFailure = /Cannot access contents|Cannot access a chrome|Missing host permission|not permitted|permission|access to this page|このタブへの一時的なアクセス権限/i.test(message);
+    statusEl.textContent='読み取り失敗：'+message;
+    results.append(elm('p','error',permissionFailure
+      ? '対象のWebページを表示した状態で、ChromeのツールバーにあるNアイコンをもう一度クリックし、「このページをスキャン」を押してください。ページを切り替えたり別サイトに移動した場合も再クリックが必要です。'
+      : '対象ページが通常のHTTP(S)ページか確認してください。iframe・PDF・Chrome内部ページは対象外です。'));
+  }
   finally{scanButton.disabled=false;}
 }
 scanButton.addEventListener('click',run);
 // API requests begin only when the user clicks the scan button.
-statusEl.textContent='「このページをスキャン」を押すと検索します。';
+statusEl.textContent='対象ページでNアイコンをクリックして開き、「このページをスキャン」を押してください。';

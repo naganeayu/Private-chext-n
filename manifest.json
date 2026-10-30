@@ -1,16 +1,15 @@
 {
   "manifest_version": 3,
   "name": "ISBN / ISSN NDL 所蔵検索",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "ページのISBN・ISSNを抽出しNDLサーチSRUで所蔵館名を表示。HTTP 429では数秒後に回数限定で再試行。",
   "permissions": [
+    "activeTab",
     "sidePanel",
-    "tabs",
     "scripting"
   ],
   "host_permissions": [
-    "http://*/*",
-    "https://*/*"
+    "https://ndlsearch.ndl.go.jp/*"
   ],
   "background": {
     "service_worker": "background.js"
